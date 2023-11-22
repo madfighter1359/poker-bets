@@ -50,9 +50,7 @@ export default function GameDetails({
 
   const call = () => {
     setPot(pot + curBet);
-    console.log(players[curPlayer]);
     addMoney(curPlayer, -curBet);
-    console.log(players[curPlayer]);
     setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
   };
 
@@ -88,6 +86,9 @@ export default function GameDetails({
         </SecondaryButton>
         <SecondaryButton size="medium" onPress={raise}>
           Raise
+        </SecondaryButton>
+        <SecondaryButton size="medium" onPress={() => console.log(players)}>
+          View
         </SecondaryButton>
       </View>
     </View>
