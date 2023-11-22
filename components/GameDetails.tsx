@@ -22,11 +22,27 @@ export default function GameDetails({
 
   let roundNr = 1;
 
-  const players = Array.from({ length: playerCount }, (_, i) => ({
-    id: i,
-    username: `Player ${i}`,
-    money: startMoney,
-  }));
+  const [players, setPlayers] = useState(
+    Array.from({ length: playerCount }, (_, i) => ({
+      id: i,
+      username: `Player ${i}`,
+      money: startMoney,
+    }))
+  );
+
+  const addMoney = (id: number, amount: number) => {
+    setPlayers((prevPlayers) => {
+      return prevPlayers.map((player, index) => {
+        if (index === id) {
+          return {
+            ...player,
+            money: player.money + amount,
+          };
+        }
+        return player;
+      });
+    });
+  };
 
   const fold = () => {
     setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
@@ -34,7 +50,7 @@ export default function GameDetails({
 
   const call = () => {
     setPot(pot + curBet);
-    players[curPlayer].money -= curBet;
+    addMoney(curPlayer, -curBet);
     setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
   };
 
@@ -44,14 +60,14 @@ export default function GameDetails({
 
   useEffect(() => {
     if (roundNr === 1) {
-      players[dealer + 1].money -= minBet / 2;
-      players[dealer + 2].money -= minBet;
+      addMoney(dealer + 1, -minBet / 2);
+      addMoney(dealer + 2, -minBet);
       setPot(1.5 * minBet);
       setCurPlayer(3);
     }
   }, [roundNr]);
 
-  console.log(players);
+  //console.log(players);
 
   return (
     <View style={styles.container}>
