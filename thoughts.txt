@@ -1,0 +1,7 @@
+turn by turn
+starting money
+pot
+store players
+raise, call, fold, check
+
+4 rounds
