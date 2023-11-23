@@ -46,7 +46,7 @@ export default function GameDetails({
   };
 
   const fold = () => {
-    setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
+    console.log('hi');
   };
 
   const call = () => {
