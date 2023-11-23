@@ -7,5 +7,6 @@ raise, call, fold, check
 4 rounds
 
 modal for raise
+lastRaiser to store latest raise, when player reached end round
 
 number picker with number in center, +x +y etc on right and - on left
