@@ -10,3 +10,5 @@ modal for raise
 lastRaiser to store latest raise, when player reached end round
 
 number picker with number in center, +x +y etc on right and - on left
+
+FIX SMALL BLIND CALL AMOUNT (ALL CALLS OF RAISES MUST SUBTRACT PREVIOUS CONTRIBUTION)

@@ -3,6 +3,7 @@ import { Button } from "react-native";
 import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import SecondaryButton from "./SecondaryButton";
 import RaiseModal from "./RaiseModal";
+import NumberPicker from "./NumberPicker";
 
 interface Props {
   playerCount: number;
@@ -23,13 +24,14 @@ export default function GameDetails({
 
   const [lastRaiser, setLastRaiser] = useState(2);
 
-  let roundNr = 1;
+  const [roundNr, setRoundNr] = useState(1);
 
   const [players, setPlayers] = useState(
     Array.from({ length: playerCount }, (_, i) => ({
       id: i,
       username: `Player ${i}`,
       money: startMoney,
+      active: true,
     }))
   );
 
@@ -47,19 +49,39 @@ export default function GameDetails({
     });
   };
 
+  const setActive = (id: number, active: boolean) => {
+    setPlayers((prevPlayers) => {
+      return prevPlayers.map((player, index) => {
+        if (index === id) {
+          return {
+            ...player,
+            active: active,
+          };
+        }
+        return player;
+      });
+    });
+  };
+
   const fold = () => {
-    setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
+    setActive(curPlayer, false);
+    nextPlayer();
   };
 
   const call = () => {
+    console.log("called");
     setPot(pot + curBet);
     addMoney(curPlayer, -curBet);
-    setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
+    nextPlayer();
   };
 
-  const raise = () => {
-    setIsModalVisible(true);
-
+  const raise = (val: number) => {
+    console.log("raised");
+    setPot(pot + val);
+    setCurBet(val);
+    addMoney(curPlayer, -val);
+    setLastRaiser(curPlayer);
+    nextPlayer();
   };
 
   useEffect(() => {
@@ -68,50 +90,54 @@ export default function GameDetails({
       addMoney(dealer + 2, -minBet);
       setPot(1.5 * minBet);
       setCurPlayer(3);
+      setCurBet(minBet);
+    } else {
+      setCurBet(0);
+      console.log(curBet);
     }
   }, [roundNr]);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const onModalClose = () => {
-    setIsModalVisible(false);
+  const nextPlayer = () => {
+    const upcoming = curPlayer === playerCount - 1 ? 0 : curPlayer + 1;
+    if (upcoming === lastRaiser) {
+      setRoundNr(roundNr + 1);
+      console.log("round finished");
+    }
+    setCurPlayer(upcoming);
   };
 
   const handleConfirm = (val: number) => {
-    onModalClose();
-    console.log(val);
-    addMoney(curPlayer, -val);
-    setLastRaiser(curPlayer);
-    setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
-  }
-
-  //console.log(players);
+    //console.log(val);
+    if (val > curBet) {
+      raise(val);
+    } else if (val === curBet) {
+      call();
+    } else {
+      console.log("error");
+      return;
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.gameView}>
         <Text>Game</Text>
-        <Text style={styles.currentText}>{players[curPlayer]. username}</Text>
-        <Text style={styles.currentText}>{`Balance: ${players[curPlayer]. money}`}</Text>
+        <Text style={styles.currentText}>{players[curPlayer].username}</Text>
+        <Text
+          style={styles.currentText}
+        >{`Balance: ${players[curPlayer].money}`}</Text>
         <Text style={styles.currentText}>Bet: {curBet}</Text>
         <Text style={styles.currentText}>Pot: {pot}</Text>
       </View>
       <View style={styles.buttonView}>
-        <RaiseModal isVisible={isModalVisible} onClose={onModalClose} defaultValue={minBet} onConfirm={(val) => handleConfirm(val)}>
-          <Text>Yoo</Text>
-        </RaiseModal>
-        <SecondaryButton size="medium" onPress={fold}>
-          Fold
-        </SecondaryButton>
-        <SecondaryButton size="medium" onPress={call}>
-          Call
-        </SecondaryButton>
-        <SecondaryButton size="medium" onPress={raise}>
-          Raise
-        </SecondaryButton>
-        <SecondaryButton size="medium" onPress={() => console.log(players)}>
-          View
-        </SecondaryButton>
+        <NumberPicker
+          onFold={fold}
+          defaultValue={curBet}
+          onConfirm={(val) => handleConfirm(val)}
+          mul1={minBet / 2}
+          mul2={minBet * 2}
+          mul3={minBet * 10}
+        ></NumberPicker>
       </View>
     </View>
   );
@@ -132,9 +158,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    height: 100,
+    paddingHorizontal: 5,
+    paddingTop: 5,
+    height: 250,
+    backgroundColor: "yellow",
   },
   textContainer: {
     alignItems: "center",
