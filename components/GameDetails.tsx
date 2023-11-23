@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "react-native";
 import { SafeAreaView, View, StyleSheet, Text } from "react-native";
 import SecondaryButton from "./SecondaryButton";
+import RaiseModal from "./RaiseModal";
 
 interface Props {
   playerCount: number;
@@ -55,6 +56,7 @@ export default function GameDetails({
   };
 
   const raise = () => {
+    setIsModalVisible(true);
     setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
   };
 
@@ -67,6 +69,12 @@ export default function GameDetails({
     }
   }, [roundNr]);
 
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
   //console.log(players);
 
   return (
@@ -78,6 +86,9 @@ export default function GameDetails({
         <Text style={styles.currentText}>Pot: {pot}</Text>
       </View>
       <View style={styles.buttonView}>
+        <RaiseModal isVisible={isModalVisible} onClose={onModalClose}>
+          <Text>Yoo</Text>
+        </RaiseModal>
         <SecondaryButton size="medium" onPress={fold}>
           Fold
         </SecondaryButton>

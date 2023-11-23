@@ -5,3 +5,7 @@ store players
 raise, call, fold, check
 
 4 rounds
+
+modal for raise
+
+number picker with number in center, +x +y etc on right and - on left
