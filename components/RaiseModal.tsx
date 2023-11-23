@@ -7,9 +7,12 @@ interface Props {
   children: React.ReactNode;
   onClose: () => void;
   defaultValue: number;
+  onConfirm: (val: number) => void;
 }
 
-export default function RaiseModal({ isVisible, children, onClose, defaultValue }: Props) {
+export default function RaiseModal({ isVisible, children, onClose, defaultValue, onConfirm }: Props) {
+
+
   return (
     <Modal animationType="slide" transparent={true} visible={isVisible}>
       <View style={styles.modalContent}>
@@ -20,7 +23,7 @@ export default function RaiseModal({ isVisible, children, onClose, defaultValue 
           </Pressable>
         </View>
         {children}
-        <NumberPicker defaultValue={defaultValue} mul1={defaultValue / 2}></NumberPicker>
+        <NumberPicker defaultValue={defaultValue} onConfirm={(val) => onConfirm(val)} mul1={defaultValue / 2} mul2={defaultValue * 2} mul3={defaultValue * 10}></NumberPicker>
       </View>
     </Modal>
   );
