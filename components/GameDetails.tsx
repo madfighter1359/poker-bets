@@ -86,7 +86,7 @@ export default function GameDetails({
         <Text style={styles.currentText}>Pot: {pot}</Text>
       </View>
       <View style={styles.buttonView}>
-        <RaiseModal isVisible={isModalVisible} onClose={onModalClose}>
+        <RaiseModal isVisible={isModalVisible} onClose={onModalClose} defaultValue={minBet}>
           <Text>Yoo</Text>
         </RaiseModal>
         <SecondaryButton size="medium" onPress={fold}>

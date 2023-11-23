@@ -1,13 +1,15 @@
 import { Modal, View, Text, Pressable, StyleSheet } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import NumberPicker from "./NumberPicker";
 
 interface Props {
   isVisible: boolean;
   children: React.ReactNode;
   onClose: () => void;
+  defaultValue: number;
 }
 
-export default function RaiseModal({ isVisible, children, onClose }: Props) {
+export default function RaiseModal({ isVisible, children, onClose, defaultValue }: Props) {
   return (
     <Modal animationType="slide" transparent={true} visible={isVisible}>
       <View style={styles.modalContent}>
@@ -18,6 +20,7 @@ export default function RaiseModal({ isVisible, children, onClose }: Props) {
           </Pressable>
         </View>
         {children}
+        <NumberPicker defaultValue={defaultValue} mul1={defaultValue / 2}></NumberPicker>
       </View>
     </Modal>
   );
