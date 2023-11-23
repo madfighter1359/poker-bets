@@ -21,6 +21,8 @@ export default function GameDetails({
   const [pot, setPot] = useState(0);
   const [curBet, setCurBet] = useState(minBet);
 
+  const [lastRaiser, setLastRaiser] = useState(2);
+
   let roundNr = 1;
 
   const [players, setPlayers] = useState(
@@ -57,7 +59,7 @@ export default function GameDetails({
 
   const raise = () => {
     setIsModalVisible(true);
-    setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
+
   };
 
   useEffect(() => {
@@ -75,18 +77,27 @@ export default function GameDetails({
     setIsModalVisible(false);
   };
 
+  const handleConfirm = (val: number) => {
+    onModalClose();
+    console.log(val);
+    addMoney(curPlayer, -val);
+    setLastRaiser(curPlayer);
+    setCurPlayer(curPlayer === playerCount - 1 ? 0 : curPlayer + 1);
+  }
+
   //console.log(players);
 
   return (
     <View style={styles.container}>
       <View style={styles.gameView}>
         <Text>Game</Text>
-        <Text style={styles.currentText}>{players[curPlayer].username}</Text>
+        <Text style={styles.currentText}>{players[curPlayer]. username}</Text>
+        <Text style={styles.currentText}>{`Balance: ${players[curPlayer]. money}`}</Text>
         <Text style={styles.currentText}>Bet: {curBet}</Text>
         <Text style={styles.currentText}>Pot: {pot}</Text>
       </View>
       <View style={styles.buttonView}>
-        <RaiseModal isVisible={isModalVisible} onClose={onModalClose}>
+        <RaiseModal isVisible={isModalVisible} onClose={onModalClose} defaultValue={minBet} onConfirm={(val) => handleConfirm(val)}>
           <Text>Yoo</Text>
         </RaiseModal>
         <SecondaryButton size="medium" onPress={fold}>
