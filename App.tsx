@@ -7,9 +7,9 @@ import PrimaryButton from "./components/PrimaryButton";
 
 export default function App() {
   const [play, setPlay] = useState(false);
-  const [playerCount, setPlayerCount] = useState("6");
-  const [startMoney, setStartMoney] = useState("200");
-  const [minBet, setMinBet] = useState("20");
+  const [playerCount, setPlayerCount] = useState("");
+  const [startMoney, setStartMoney] = useState("");
+  const [minBet, setMinBet] = useState("");
   return (
     <SafeAreaView style={styles.container}>
       {play ? (
