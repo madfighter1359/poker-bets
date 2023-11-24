@@ -2,27 +2,26 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 interface Props {
-  defaultValue: number;
+  value: number;
+  minValue: number;
   mul1: number;
   mul2: number;
   mul3: number;
   onConfirm: (val: number) => void;
   onFold: () => void;
+  onNumberChange: (num: number) => void;
 }
 
 export default function NumberPicker({
-  defaultValue,
+  value,
+  minValue,
   mul1,
   mul2,
   mul3,
   onConfirm,
   onFold,
+  onNumberChange,
 }: Props) {
-  const [number, setNumber] = useState(defaultValue);
-  const [minNumber, setMinNumber] = useState(defaultValue);
-
-  const handleSubmit = (valL: number) => {};
-
   const [textSize, setTextSize] = useState(40);
 
   return (
@@ -30,30 +29,30 @@ export default function NumberPicker({
       <View style={styles.topButtons}>
         <TouchableOpacity
           onPress={() => {
-            if (number + mul1 >= 1000) {
+            if (value + mul1 >= 1000) {
               setTextSize(30);
             }
-            setNumber(number + mul1);
+            onNumberChange(value + mul1);
           }}
         >
           <Text style={styles.addBox}>{`+${mul1}`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            if (number + mul2 >= 1000) {
+            if (value + mul2 >= 1000) {
               setTextSize(30);
             }
-            setNumber(number + mul2);
+            onNumberChange(value + mul2);
           }}
         >
           <Text style={styles.addBox}>{`+${mul2}`}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            if (number + mul3 >= 1000) {
+            if (value + mul3 >= 1000) {
               setTextSize(30);
             }
-            setNumber(number + mul3);
+            onNumberChange(value + mul3);
           }}
         >
           <Text style={styles.addBox}>{`+${mul3}`}</Text>
@@ -62,20 +61,20 @@ export default function NumberPicker({
       <View style={styles.bottomButtons}>
         <TouchableOpacity
           onPress={() => {
-            if (number >= 1000 && number - mul1 < 1000) {
+            if (value >= 1000 && value - mul1 < 1000) {
               setTextSize(40);
             }
-            setNumber(number - mul1 > minNumber ? number - mul1 : minNumber);
+            onNumberChange(value - mul1 > minValue ? value - mul1 : minValue);
           }}
         >
           <Text style={styles.addBox}>{-mul1}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            if (number >= 1000 && number - mul2 < 1000) {
+            if (value >= 1000 && value - mul2 < 1000) {
               setTextSize(40);
             }
-            setNumber(number - mul2 > minNumber ? number - mul2 : minNumber);
+            onNumberChange(value - mul2 > minValue ? value - mul2 : minValue);
           }}
         >
           <Text style={styles.addBox}>{-mul2}</Text>
@@ -83,10 +82,10 @@ export default function NumberPicker({
 
         <TouchableOpacity
           onPress={() => {
-            if (number >= 1000 && number - mul3 < 1000) {
+            if (value >= 1000 && value - mul3 < 1000) {
               setTextSize(40);
             }
-            setNumber(number - mul3 > minNumber ? number - mul3 : minNumber);
+            onNumberChange(value - mul3 > minValue ? value - mul3 : minValue);
           }}
         >
           <Text style={styles.addBox}>{-mul3}</Text>
@@ -98,12 +97,12 @@ export default function NumberPicker({
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            onConfirm(number);
-            setMinNumber(number);
+            onConfirm(value);
+            //setMinNumber(value);
           }}
         >
           <Text style={[styles.numberBox, { fontSize: textSize }]}>
-            {number}
+            {value}
           </Text>
         </TouchableOpacity>
       </View>
@@ -142,6 +141,7 @@ const styles = StyleSheet.create({
     backgroundColor: "purple",
     justifyContent: "center",
     alignItems: "center",
+    marginTop: 14,
   },
   bottomButtons: {
     width: 280,
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     marginLeft: -283,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 14,
   },
   numberContainer: {
     width: 100,

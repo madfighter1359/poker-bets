@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "react-native";
-import { SafeAreaView, View, StyleSheet, Text } from "react-native";
+import { SafeAreaView, View, StyleSheet, Text, Pressable } from "react-native";
 import SecondaryButton from "./SecondaryButton";
 import RaiseModal from "./RaiseModal";
 import NumberPicker from "./NumberPicker";
@@ -16,15 +16,20 @@ export default function GameDetails({
   startMoney,
   minBet,
 }: Props) {
-  const [curPlayer, setCurPlayer] = useState(0);
+  const [curPlayer, setCurPlayer] = useState(1);
   const [dealer, setDealer] = useState(0);
 
   const [pot, setPot] = useState(0);
-  const [curBet, setCurBet] = useState(minBet);
+  const [curBet, setCurBet] = useState(0);
 
-  const [lastRaiser, setLastRaiser] = useState(2);
+  const [lastRaiser, setLastRaiser] = useState(0);
 
   const [roundNr, setRoundNr] = useState(1);
+
+  const [started, setStarted] = useState(false);
+  const [partStarted, setPartStarted] = useState(false);
+
+  const [folded, setFolded] = useState([]);
 
   const [players, setPlayers] = useState(
     Array.from({ length: playerCount }, (_, i) => ({
@@ -64,7 +69,24 @@ export default function GameDetails({
   };
 
   const fold = () => {
+    let count = 0;
+    let lastActive = 0;
     setActive(curPlayer, false);
+    players[curPlayer].active = false; //useState workaround?
+    console.log("folded");
+    console.log(players);
+    for (let i = 0; i < playerCount; i++) {
+      if (players[i].active) {
+        lastActive = i;
+        count++;
+      }
+    }
+    if (count < 2) {
+      console.log("1 left");
+      addMoney(lastActive, pot);
+      roundEnd();
+      return;
+    }
     nextPlayer();
   };
 
@@ -84,30 +106,58 @@ export default function GameDetails({
     nextPlayer();
   };
 
+  const roundEnd = () => {
+    setCurBet(0);
+    setCurBet(0);
+    setRoundNr(roundNr + 1);
+    setLastRaiser(1);
+    setCurPlayer(1);
+    console.log("round finished");
+  };
+
+  const initGame = () => {
+    raise(minBet / 2);
+    raise(minBet);
+  };
+
   useEffect(() => {
     if (roundNr === 1) {
-      addMoney(dealer + 1, -minBet / 2);
-      addMoney(dealer + 2, -minBet);
-      setPot(1.5 * minBet);
-      setCurPlayer(3);
-      setCurBet(minBet);
+      console.log("effected");
+    } else if (roundNr === 5) {
+      console.log("hand end");
     } else {
       setCurBet(0);
-      console.log(curBet);
+      setCurPicker(0);
     }
   }, [roundNr]);
 
   const nextPlayer = () => {
-    const upcoming = curPlayer === playerCount - 1 ? 0 : curPlayer + 1;
+    let upcoming = curPlayer === playerCount - 1 ? 0 : curPlayer + 1;
+    let arePlayers = true;
     if (upcoming === lastRaiser) {
-      setRoundNr(roundNr + 1);
-      console.log("round finished");
+      roundEnd();
+    } else if (!players[upcoming].active) {
+      upcoming = upcoming === playerCount - 1 ? 0 : upcoming + 1;
+      while (arePlayers) {
+        if (players[upcoming].active) {
+          setCurPlayer(upcoming);
+          console.log("skipped");
+          return;
+        } else if (upcoming === curPlayer) {
+          arePlayers = false;
+        } else {
+          upcoming = upcoming === playerCount - 1 ? 0 : upcoming + 1;
+        }
+      }
+      console.log("hand over");
+    } else {
+      setCurPlayer(upcoming);
     }
-    setCurPlayer(upcoming);
   };
 
   const handleConfirm = (val: number) => {
     //console.log(val);
+
     if (val > curBet) {
       raise(val);
     } else if (val === curBet) {
@@ -118,10 +168,24 @@ export default function GameDetails({
     }
   };
 
+  const [curPicker, setCurPicker] = useState(minBet);
+
+  if (!started) {
+    raise(minBet / 2);
+    setPartStarted(true);
+    if (partStarted) {
+      raise(minBet);
+      setStarted(true);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.gameView}>
         <Text>Game</Text>
+        <Pressable onPress={() => console.log(players)}>
+          <Text>View</Text>
+        </Pressable>
         <Text style={styles.currentText}>{players[curPlayer].username}</Text>
         <Text
           style={styles.currentText}
@@ -132,8 +196,10 @@ export default function GameDetails({
       <View style={styles.buttonView}>
         <NumberPicker
           onFold={fold}
-          defaultValue={curBet}
+          value={curPicker}
+          minValue={curBet}
           onConfirm={(val) => handleConfirm(val)}
+          onNumberChange={(num) => setCurPicker(num)}
           mul1={minBet / 2}
           mul2={minBet * 2}
           mul3={minBet * 10}
