@@ -84,7 +84,7 @@ export default function GameDetails({
     if (count < 2) {
       console.log("1 left");
       addMoney(lastActive, pot);
-      roundEnd();
+      handEnd();
       return;
     }
     nextPlayer();
@@ -120,12 +120,18 @@ export default function GameDetails({
 
   const roundEnd = () => {
     setCurBet(0);
-    setCurBet(0);
     setRoundNr(roundNr + 1);
     setLastRaiser(1);
     setCurPlayer(nextActive(0));
     console.log("round finished");
   };
+
+  const handEnd = () => {
+    setCurBet(0);
+    setPot(0);
+    setRoundNr(1);
+    console.log('hand finished');
+  }
 
   const upcomingPlayer = (id: number) => {
     return id === playerCount - 1 ? 0 : id + 1;

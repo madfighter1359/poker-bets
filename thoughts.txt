@@ -14,3 +14,5 @@ number picker with number in center, +x +y etc on right and - on left
 FIX SMALL BLIND CALL AMOUNT (ALL CALLS OF RAISES MUST SUBTRACT PREVIOUS CONTRIBUTION)
 
 next player all folded handling is redundant, will never be reached? (check)
+
+settings sync
