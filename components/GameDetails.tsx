@@ -106,13 +106,29 @@ export default function GameDetails({
     nextPlayer();
   };
 
+  const nextActive = (id: number) => {
+    let i = id;
+    i = upcomingPlayer(i);
+    while (i != id) {
+      if (players[i].active) {
+        return i;
+      }
+      i = upcomingPlayer(i);
+    }
+    return 0;
+  };
+
   const roundEnd = () => {
     setCurBet(0);
     setCurBet(0);
     setRoundNr(roundNr + 1);
     setLastRaiser(1);
-    setCurPlayer(1);
+    setCurPlayer(nextActive(0));
     console.log("round finished");
+  };
+
+  const upcomingPlayer = (id: number) => {
+    return id === playerCount - 1 ? 0 : id + 1;
   };
 
   const initGame = () => {
@@ -132,12 +148,12 @@ export default function GameDetails({
   }, [roundNr]);
 
   const nextPlayer = () => {
-    let upcoming = curPlayer === playerCount - 1 ? 0 : curPlayer + 1;
+    let upcoming = upcomingPlayer(curPlayer);
     let arePlayers = true;
     if (upcoming === lastRaiser) {
       roundEnd();
     } else if (!players[upcoming].active) {
-      upcoming = upcoming === playerCount - 1 ? 0 : upcoming + 1;
+      upcoming = upcomingPlayer(upcoming);
       while (arePlayers) {
         if (players[upcoming].active) {
           setCurPlayer(upcoming);
@@ -146,7 +162,7 @@ export default function GameDetails({
         } else if (upcoming === curPlayer) {
           arePlayers = false;
         } else {
-          upcoming = upcoming === playerCount - 1 ? 0 : upcoming + 1;
+          upcoming = upcomingPlayer(upcoming);
         }
       }
       console.log("hand over");
@@ -183,7 +199,12 @@ export default function GameDetails({
     <View style={styles.container}>
       <View style={styles.gameView}>
         <Text>Game</Text>
-        <Pressable onPress={() => console.log(players)}>
+        <Pressable
+          onPress={() => {
+            console.log(players);
+            console.log(nextActive(0));
+          }}
+        >
           <Text>View</Text>
         </Pressable>
         <Text style={styles.currentText}>{players[curPlayer].username}</Text>
